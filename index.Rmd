@@ -1,0 +1,329 @@
+---
+title: "Proyecto 01, Curso Procesamiento de Datos Geográficos"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Datos Climatológicos de Liberia, 2015-2019
+[Dirección al código fuente](https://github.com/fernando1998-g/Proyecto_01)
+
+###### Imágen Ilustrativa  
+![](https://images.unsplash.com/photo-1612872212221-f13adb1957b5?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=667&q=80)  
+[Walking Through Freezing Waters by Subhadeep Dishant](https://unsplash.com/photos/rTn7AzLhvFY)
+
+
+#### Importando datos a Rstudio
+```{r message=FALSE}
+inp <- read.csv("liberia_datos_climaticos.csv",sep = ",", na.strings = "", dec = ",")
+```
+
+#### Visualizando las primeras 5 filas del documento 
+```{r }
+head(inp)
+```
+
+#### Revisando cuantas filas y columnas tiene el documento
+```{r }
+dim(inp)
+```
+
+#### Indagando si hay NA (NOT AVAILABLE)(Celdas Vacias)
+```{r }
+inp[!complete.cases(inp),]
+```
+##### **Nota:** Existen celdas vacias, por lo que hay que eliminarlas
+
+#### Creando un archivo nuevo(Data.Frame) sin NA
+```{r }
+inp_li <- na.omit(inp)
+```
+
+#### Confirmando que no hay NA en el nuevo Data.Frame
+```{r }
+inp_li[!complete.cases(inp_li),]
+```
+
+#### Estadística descriptiva de las series
+```{r }
+str(inp_li)
+```
+
+#### Cargando las Bibliotecas
+```{r message=FALSE}
+library(ggplot2)
+library(dplyr)
+library(hrbrthemes)
+library(gridExtra)
+```
+
+#### Convirtiendo las variables de character a valor numerico
+```{r }
+inp_li$Temperatura..Celsius. <- as.numeric(inp_li$Temperatura..Celsius.)
+inp_li$HumedadRelativa.... <- as.numeric(inp_li$HumedadRelativa....)
+inp_li$VelocidadViento..m.s. <- as.numeric(inp_li$VelocidadViento..m.s.)
+inp_li$Lluvia..mm. <- as.numeric(inp_li$Lluvia..mm.)
+inp_li$Irradiacion..W.m2. <- as.numeric(inp_li$Irradiacion..W.m2.)
+inp_li$EvapoTranspiracion..mm. <- as.numeric(inp_li$EvapoTranspiracion..mm.)
+```
+
+#### Reconfirmando la estructura del Data.frame
+```{r }
+str(inp_li)
+```
+
+#### Cambiando el nombre de las variables y asignandole uno 
+```{r }
+inp_re <- inp_li %>%
+  rename(
+    Temperatura = Temperatura..Celsius.,
+    Fecha = Date,
+    Humedad = HumedadRelativa....,
+    Velocidad = VelocidadViento..m.s.,
+    Lluvia = Lluvia..mm.,
+    Irradiacion = Irradiacion..W.m2.,
+    Evaporacion = EvapoTranspiracion..mm.,
+  )
+```
+
+#### Visulización Inicial de las Variables Individualmente
+##### Temperatura
+```{r  message=FALSE, echo=FALSE}
+ggplot(inp_re, aes(x = Temperatura)) +
+  geom_histogram(binwidth = 1,
+                 color = "red",
+                 fill = "white") +
+  facet_grid() +
+  ggtitle("Histograma de Temperatura") +
+  xlab("Rango") +
+  ylab("celsius (?C)") +
+  theme_ipsum()
+```
+
+##### Humedad Relativa
+```{r  message=FALSE, echo=FALSE}
+ggplot(inp_re, aes(x = Humedad)) +
+  geom_histogram(binwidth = 1,
+                 color = "blue",
+                 fill = "white") +
+  facet_grid() +
+  ggtitle("Histograma de la Humedad Relativa") +
+  xlab("Rango") +
+  ylab("Porcentaje (%)") +
+  theme_ipsum()
+```
+
+##### Velocidad del Viento
+```{r  message=FALSE, echo=FALSE}
+ggplot(inp_re, aes(x = Velocidad)) +
+  geom_histogram(binwidth = 1,
+                 color = "orange",
+                 fill = "white") +
+  facet_grid() +
+  ggtitle("Histograma de la Velocidad del viento") +
+  xlab("Rango") +
+  ylab("m/s") +
+  theme_ipsum()
+
+```
+
+##### Lluvia
+```{r  message=FALSE, echo=FALSE}
+ggplot(inp_re, aes(x = Lluvia)) +
+  geom_histogram(binwidth = 1,
+                 color = "blue",
+                 fill = "white") +
+  facet_grid() +
+  ggtitle("Histograma de la Lluvia") +
+  xlab("Rango") +
+  ylab("m.m") +
+  theme_ipsum()
+```
+
+##### Irradiación
+```{r  message=FALSE, echo=FALSE}
+ggplot(inp_re, aes(x = Irradiacion)) +
+  geom_histogram(binwidth = 1,
+                 color = "purple",
+                 fill = "white") +
+  facet_grid() +
+  ggtitle("Histograma de la Irradiacion") +
+  xlab("Rango") +
+  ylab("W.m2") +
+  theme_ipsum()
+```
+
+##### EvapoTraspiración
+```{r  message=FALSE, echo=FALSE}
+ggplot(inp_re, aes(x = Evaporacion)) +
+  geom_histogram(binwidth = 1,
+                 color = "green",
+                 fill = "white") +
+  facet_grid() +
+  ggtitle("Histograma de la EvapoTraspiracion") +
+  xlab("Rango") +
+  ylab("m.m") +
+  theme_ipsum()
+```
+
+#### Histogramas en un solo Gráfico
+```{r  message=FALSE, echo=FALSE}
+Temp <- ggplot(inp_re, aes(x = Temperatura)) +
+  geom_histogram(binwidth = 1,
+                 color = "red",
+                 fill = "white") +
+  facet_grid() +
+  ggtitle("Temperatura") +
+  xlab("Rango") +
+  ylab("celsius (?C)") +
+  theme_ipsum()
+
+Hum <- ggplot(inp_re, aes(x = Humedad)) +
+  geom_histogram(binwidth = 1,
+                 color = "blue",
+                 fill = "white") +
+  facet_grid() +
+  ggtitle("Humedad Relativa") +
+  xlab("Rango") +
+  ylab("Porcentaje (%)") +
+  theme_ipsum()
+
+Vel <- ggplot(inp_re, aes(x = Velocidad)) +
+  geom_histogram(binwidth = 1,
+                 color = "orange",
+                 fill = "white") +
+  facet_grid() +
+  ggtitle("Velocidad del viento") +
+  xlab("Rango") +
+  ylab("m/s") +
+  theme_ipsum()
+
+Lluv <- ggplot(inp_re, aes(x = Lluvia)) +
+  geom_histogram(binwidth = 1,
+                 color = "blue",
+                 fill = "white") +
+  facet_grid() +
+  ggtitle("Lluvia") +
+  xlab("Rango") +
+  ylab("m.m") +
+  theme_ipsum()
+
+Irra <- ggplot(inp_re, aes(x = Irradiacion)) +
+  geom_histogram(binwidth = 1,
+                 color = "purple",
+                 fill = "white") +
+  facet_grid() +
+  ggtitle("Irradiacion") +
+  xlab("Rango") +
+  ylab("W.m2") +
+  theme_ipsum()
+
+EvapT <- ggplot(inp_re, aes(x = Evaporacion)) +
+  geom_histogram(binwidth = 1,
+                 color = "green",
+                 fill = "white") +
+  facet_grid() +
+  ggtitle("EvapoTraspiracion") +
+  xlab("Rango") +
+  ylab("m.m") +
+  theme_ipsum()
+
+grid.arrange(Temp, Hum, Vel, Lluv, Irra, EvapT)
+```
+
+#### Promediando las Variables por mes
+```{r }
+Datos_Prom <- inp_re%>%
+  select(Fecha,
+         Temperatura,
+         Humedad,
+         Velocidad,
+         Lluvia,
+         Irradiacion,
+         Evaporacion) %>%
+  mutate(Fecha = as.Date(Fecha, format = "%d/%m/%Y")) %>%
+  group_by(Fecha = format(Fecha, "%m")) %>%
+  summarise(
+    Temperatura = mean(Temperatura),
+    Humedad = mean(Humedad),
+    Velocidad = mean(Velocidad),
+    Lluvia = mean(Lluvia),
+    Irradiacion = mean(Irradiacion),
+    Evaporacion = mean(Evaporacion)
+  ) 
+```
+
+#### Gráficos de líneas
+```{r message=FALSE, echo=FALSE}
+MMQ_Temperatura <- ggplot(Datos_Prom, aes(x = Fecha, y = Temperatura, group = 1)) +
+  geom_line(color = "red") +
+  xlab("Promedio Temperatura por mes") +
+  ylab("?c")
+
+MMQ_Humedad_Rel <- ggplot(Datos_Prom, aes(x = Fecha, y = Humedad, group = 1)) +
+  geom_line(color = "blue") +
+  xlab("Promedio Humedad Relativa por mes") +
+  ylab("%")
+
+MMQ_Vel_Viento <- ggplot(Datos_Prom, aes(x = Fecha, y = Velocidad, group = 1)) +
+  geom_line(color = "orange") +
+  xlab("Promedio Velocidad del Viento por mes") +
+  ylab("m/s")
+
+MMQ_Lluvia <- ggplot(Datos_Prom, aes(x = Fecha, y = Lluvia, group = 1)) +
+  geom_line(color = "blue") +
+  xlab("Promedio Lluvia por mes") +
+  ylab("m.m")
+
+MMQ_Irradiacion <- ggplot(Datos_Prom, aes(x = Fecha, y = Irradiacion, group = 1)) +
+  geom_line(color = "purple") +
+  xlab("Promedio Irradiacion por mes") +
+  ylab("W.m2")
+
+MMQ_Eva_Trasp <- ggplot(Datos_Prom, aes(x = Fecha, y = Evaporacion, group = 1)) +
+  geom_line(color = "green") +
+  xlab("Promedio EvapoTraspiracion por mes") +
+  ylab("m.m")
+
+grid.arrange(MMQ_Temperatura, MMQ_Humedad_Rel, MMQ_Vel_Viento, MMQ_Lluvia, MMQ_Irradiacion, MMQ_Eva_Trasp, nrow = 6, ncol = 1)
+```
+
+#### Gráficos Nube de Puntos
+```{r  message=FALSE, echo=FALSE}
+Nub_Temp <- ggplot(inp_re, aes(x = Fecha, y = Temperatura, group = 1)) +
+  geom_point(color = "red") +
+  xlab("Fechas Variable Temperatura") +
+  ylab("?C")
+
+
+Nub_Hum <- ggplot(inp_re, aes(x = Fecha, y = Humedad, group = 1)) +
+  geom_point(color = "blue") +
+  xlab("Fechas Variable Humedad Relativa") +
+  ylab("%")
+
+Nub_Vel <- ggplot(inp_re, aes(x = Fecha, y = Velocidad, group = 1)) +
+  geom_point(color = "orange") +
+  xlab("Fechas Variable Velocidad del Viento") +
+  ylab("m/s")
+
+Nub_Lluvia <- ggplot(inp_re, aes(x = Fecha, y = Lluvia, group = 1)) +
+  geom_point(color = "blue") +
+  xlab("Fechas Variable Lluvia") +
+  ylab("m.m")
+
+Nub_Irra <- ggplot(inp_re, aes(x = Fecha, y = Irradiacion, group = 1)) +
+  geom_point(color = "purple") +
+  xlab("Fechas Variable Irradiacion") +
+  ylab("W.m2")
+
+Nub_EvaT <- ggplot(inp_re, aes(x = Fecha, y = Evaporacion, group = 1)) +
+  geom_point(color = "green") +
+  xlab("Fechas Variable EvapoTraspiracion") +
+  ylab("m.m")
+
+grid.arrange(Nub_Temp, Nub_Hum, Nub_Vel,Nub_Lluvia, Nub_Irra,Nub_EvaT, nrow = 6, ncol = 1)
+```
+
+##### **Nota para el Profesor:** Hago de su conocimiento que intenté quitar los warnings con el comando que nos dijo (message=False), pero igual siguieron apareciendo, busqué en internet, pero sinceramente me dió miedo que al usar un comando afectará el resto del documento.
