@@ -4,7 +4,7 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(warning=FALSE, message=FALSE,echo = TRUE)
 ```
 
 ## Datos Climatológicos de Liberia, 2015-2019
@@ -89,7 +89,6 @@ inp_re <- inp_li %>%
 ```
 
 #### Visulización Inicial de las Variables Individualmente
-##### Temperatura
 ```{r  message=FALSE, echo=FALSE}
 ggplot(inp_re, aes(x = Temperatura)) +
   geom_histogram(binwidth = 1,
@@ -98,11 +97,10 @@ ggplot(inp_re, aes(x = Temperatura)) +
   facet_grid() +
   ggtitle("Histograma de Temperatura") +
   xlab("Rango") +
-  ylab("celsius (?C)") +
+  ylab("celsius (°C)") +
   theme_ipsum()
 ```
 
-##### Humedad Relativa
 ```{r  message=FALSE, echo=FALSE}
 ggplot(inp_re, aes(x = Humedad)) +
   geom_histogram(binwidth = 1,
@@ -115,7 +113,6 @@ ggplot(inp_re, aes(x = Humedad)) +
   theme_ipsum()
 ```
 
-##### Velocidad del Viento
 ```{r  message=FALSE, echo=FALSE}
 ggplot(inp_re, aes(x = Velocidad)) +
   geom_histogram(binwidth = 1,
@@ -129,7 +126,6 @@ ggplot(inp_re, aes(x = Velocidad)) +
 
 ```
 
-##### Lluvia
 ```{r  message=FALSE, echo=FALSE}
 ggplot(inp_re, aes(x = Lluvia)) +
   geom_histogram(binwidth = 1,
@@ -142,7 +138,6 @@ ggplot(inp_re, aes(x = Lluvia)) +
   theme_ipsum()
 ```
 
-##### Irradiación
 ```{r  message=FALSE, echo=FALSE}
 ggplot(inp_re, aes(x = Irradiacion)) +
   geom_histogram(binwidth = 1,
@@ -155,7 +150,6 @@ ggplot(inp_re, aes(x = Irradiacion)) +
   theme_ipsum()
 ```
 
-##### EvapoTraspiración
 ```{r  message=FALSE, echo=FALSE}
 ggplot(inp_re, aes(x = Evaporacion)) +
   geom_histogram(binwidth = 1,
@@ -169,7 +163,7 @@ ggplot(inp_re, aes(x = Evaporacion)) +
 ```
 
 #### Histogramas en un solo Gráfico
-```{r  message=FALSE, echo=FALSE}
+```{r  message=FALSE, echo=FALSE, fig.width=10, fig.height=8}
 Temp <- ggplot(inp_re, aes(x = Temperatura)) +
   geom_histogram(binwidth = 1,
                  color = "red",
@@ -177,7 +171,7 @@ Temp <- ggplot(inp_re, aes(x = Temperatura)) +
   facet_grid() +
   ggtitle("Temperatura") +
   xlab("Rango") +
-  ylab("celsius (?C)") +
+  ylab("celsius (°C)") +
   theme_ipsum()
 
 Hum <- ggplot(inp_re, aes(x = Humedad)) +
@@ -256,11 +250,11 @@ Datos_Prom <- inp_re%>%
 ```
 
 #### Gráficos de líneas
-```{r message=FALSE, echo=FALSE}
+```{r message=FALSE, echo=FALSE, fig.width=15, fig.height=12}
 MMQ_Temperatura <- ggplot(Datos_Prom, aes(x = Fecha, y = Temperatura, group = 1)) +
   geom_line(color = "red") +
   xlab("Promedio Temperatura por mes") +
-  ylab("?c")
+  ylab("°c")
 
 MMQ_Humedad_Rel <- ggplot(Datos_Prom, aes(x = Fecha, y = Humedad, group = 1)) +
   geom_line(color = "blue") +
@@ -291,11 +285,11 @@ grid.arrange(MMQ_Temperatura, MMQ_Humedad_Rel, MMQ_Vel_Viento, MMQ_Lluvia, MMQ_I
 ```
 
 #### Gráficos Nube de Puntos
-```{r  message=FALSE, echo=FALSE}
+```{r  message=FALSE, echo=FALSE, fig.width=10, fig.height=15}
 Nub_Temp <- ggplot(inp_re, aes(x = Fecha, y = Temperatura, group = 1)) +
   geom_point(color = "red") +
   xlab("Fechas Variable Temperatura") +
-  ylab("?C")
+  ylab("°C")
 
 
 Nub_Hum <- ggplot(inp_re, aes(x = Fecha, y = Humedad, group = 1)) +
@@ -326,4 +320,4 @@ Nub_EvaT <- ggplot(inp_re, aes(x = Fecha, y = Evaporacion, group = 1)) +
 grid.arrange(Nub_Temp, Nub_Hum, Nub_Vel,Nub_Lluvia, Nub_Irra,Nub_EvaT, nrow = 6, ncol = 1)
 ```
 
-##### **Nota para el Profesor:** Hago de su conocimiento que intenté quitar los warnings con el comando que nos dijo (message=False), pero igual siguieron apareciendo, busqué en internet, pero sinceramente me dió miedo que al usar un comando afectará el resto del documento.
+
